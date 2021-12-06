@@ -2,6 +2,8 @@
 {
 
     const express = require('express'),
+        path = require("path"),
+
        // cors = require("cors"),
 
         m_spys = require("../modules/spys_one"),
@@ -118,7 +120,7 @@
     cz("socks5");
 */
 
-    app.use("/",express.static("../www"));
+    app.use("/",express.static(path.join(__dirname,"/www")));
 
     let port = process.env["PORT"] || 7769;
     app.listen(port, () => console.log(`http://localhost:${port}/`));
