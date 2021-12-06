@@ -11,7 +11,9 @@
                 const opts = {
                     headless: true,
                     args: [
-                        `--user-agent=${ua.random()}`
+                        `--user-agent=${ua.random()}`,
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox'
                     ]
                 };
 
