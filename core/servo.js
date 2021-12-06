@@ -16,7 +16,6 @@
         for (let idx = 0; idx < arr.length; idx++) {
             text += arr[idx] + "\n";
         }
-        console.log("created string",text.length);
         return text;
     }
 
@@ -34,9 +33,24 @@
 
     app.get("/proxynova", (req,res)=>{
         const parser = require("./puppeteer/parser-puppeteer");
-        const url = "https://www.proxynova.com/proxy-server-list/elite-proxies/";
+        const url = "https://www.proxynova.com/proxy-server-list";
         loader(url, function (cb){
-            parser.table(url, {selector: "#tbl_proxy_list tbody tr"}, cb);
+            parser.table(url + "/elite-proxies/", {selector: "#tbl_proxy_list tbody tr"}, (e,d)=>{
+                if (e) cb(e);
+                else {
+                    console.log("elite", d.length);
+                    let pr = d;
+                    setTimeout(function (){
+                        parser.table(url + "/anonymous-proxies/", {selector: "#tbl_proxy_list tbody tr"}, (e2, d2) => {
+                            if (e2) cb(e2);
+                            else {
+                                console.log("anonymous", d2.length);
+                                cb(null,pr.concat(d2));
+                            }
+                        })
+                    },500);
+                }
+            });
         }).then(o => {
             console.log("/proxynova results", o.data.length);
             res.contentType("text/plain");
@@ -104,6 +118,8 @@
     cz("socks5");
 */
 
+    app.use("/",express.static("../www"));
+
     let port = process.env["PORT"] || 7769;
-    app.listen(port, () => console.log(`wrapper-service:[${port}]/`));
+    app.listen(port, () => console.log(`http://localhost:${port}/`));
 }
