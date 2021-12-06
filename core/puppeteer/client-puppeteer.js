@@ -1,5 +1,7 @@
 {
-    const createBrowserless = require('browserless');
+    //const createBrowserless = require('browserless');
+
+    const puppeteer = require('puppeteer');
 
     const ua = new ({UserAgent} = require("user-agents"))();
 
@@ -15,10 +17,14 @@
 
                 if (proxy) opts.args.push(`--proxy-server"=${proxy}`);
 
-                const browserlessFactory = createBrowserless({ launchOpts: opts });
-                const browserless = await browserlessFactory.createContext();
-                const browser = await browserless.browser();
-                const page = await browserless.page();
+               // const browserlessFactory = createBrowserless({ launchOpts: opts });
+               // const browserless = await browserlessFactory.createContext();
+               // const browser = await browserless.browser();
+               // const page = await browserless.page();
+
+                const browser = await puppeteer.launch(opts);
+
+                const page = await browser.newPage();
                 await page.goto(url);
 
                 cb(null, {page, browser});

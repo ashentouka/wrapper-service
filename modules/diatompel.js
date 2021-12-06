@@ -24,7 +24,6 @@
                                 const count = await page.evaluate(function () {
                                     return $("#proxyList tbody tr").length;
                                 });
-                                console.log(count);
                                 if (count > 100) {
                                     const text = await page.evaluate(rowparser,{selector:"#proxyList tr"});
                                     await browser.close();
