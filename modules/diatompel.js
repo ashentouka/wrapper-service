@@ -1,4 +1,5 @@
 {
+    const rowparser = require("../core/puppeteer/rowparser")
     const client = require('../core/puppeteer/client-puppeteer');
     const loader = require('../core/cached-scraper');
 
@@ -25,24 +26,7 @@
                                 });
                                 console.log(count);
                                 if (count > 100) {
-                                    const text = await page.evaluate(function () {
-                                        const ip_port_regex = /([1-2]?\d{1,2}\.[1-2]?\d{1,2}\.[1-2]?\d{1,2}\.[1-2]?\d{1,2}:\d{2,6})/;
-                                        let vv = document.querySelectorAll("#proxyList tr");
-                                        if (vv) {
-                                            let outp = [];
-                                            let cs = {};
-                                            for (let idx = 0; idx < vv.length; idx++) {
-                                                let cells = vv[idx].querySelectorAll("td");
-                                                cs[idx] = cells;
-
-                                                let ip = cells[0].innerText;
-                                                if (ip_port_regex.test(ip)) {
-                                                    outp.push(ip);
-                                                }
-                                            }
-                                            return outp;
-                                        }
-                                    });
+                                    const text = await page.evaluate(rowparser,{selector:"#proxyList tr"});
                                     await browser.close();
                                     cb(null, text);
                                 } else {

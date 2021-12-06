@@ -1,9 +1,9 @@
 {
   "name": "wrapper",
   "version": "1.0.1",
-  "main": "core/servo.js",
+  "main": "servo.js",
   "scripts": {
-    "start": "node core/servo.js"
+    "start": "node servo.js"
   },
   "dependencies": {
     "axios": "^0.24.0",
