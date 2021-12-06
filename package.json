@@ -1,12 +1,12 @@
 {
   "name": "wrapper",
-  "version": "1.0.1",
   "main": "servo.js",
-  "scripts": {
-    "start": "node servo.js"
-  },
+  "version": "1.0.2",
   "engines": {
     "node": "16.x"
+  },
+  "scripts": {
+    "start": "node servo.js"
   },
   "dependencies": {
     "axios": "^0.24.0",
