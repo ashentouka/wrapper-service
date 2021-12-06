@@ -104,6 +104,6 @@
     cz("socks5");
 */
 
-    let port = 7769;
+    let port = process.env["PORT"] || 7769;
     app.listen(port, () => console.log(`wrapper-service:[${port}]/`));
 }
