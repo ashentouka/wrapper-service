@@ -1,4 +1,7 @@
 {
+  "name": "wrapper",
+  "version": "1.0.1",
+  "main": "core/servo.js",
   "dependencies": {
     "axios": "^0.24.0",
     "browserless": "^9.3.0-beta.8",
