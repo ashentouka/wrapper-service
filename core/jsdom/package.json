@@ -1,0 +1,15 @@
+{
+  "name": "@sleepwalker/client-jsdom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client-jsdom.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "jquery-jsdom": "file:/home/pdubz/Development/node-jquery",
+    "jsdom": "file:/home/pdubz/Development/jsdom",
+    "simple-proxy-agent": "^1.1.0",
+    "user-agents": "^1.0.757"
+  }
+}

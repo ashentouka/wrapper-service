@@ -7,7 +7,10 @@
        // cors = require("cors"),
 
         m_spys = require("./modules/spys_one"),
-        m_dia = require("./modules/diatompel")
+        m_fpls = require("./modules/fpls"),
+        m_pld = require("./modules/proxy-list-dl"),
+        m_dia = require("./modules/diatompel"),
+        m_hide = require("./modules/hidemy"),
         loader = require("./core/cached-scraper");
     app = express();
 
@@ -82,20 +85,60 @@
         });
     }
 
+    function hide(proto) {
+        app.get(`/proxies/hidemy/${proto}`, (req, res) => {
+            m_hide[proto]().then(dia => {
+                console.log(`/hidemy/${proto} results`, dia.data.length);
+                res.contentType("text/plain");
+                res.send(composeArray(dia.data));
+            }).catch(e => console.log(e));
+        });
+    }
+
+    function pld(proto) {
+        app.get(`/proxies/p-l-d/${proto}`, (req, res) => {
+            m_pld[proto]().then(pld => {
+                console.log(`/p-l-d/${proto} results`, pld.data.length);
+                res.contentType("text/plain");
+                res.send(composeArray(pld.data));
+            }).catch(e => console.log(e));
+        });
+    }
+
+    function fpls() {
+        app.get(`/proxies/fpls/http`, (req, res) => {
+            m_fpls().then(pld => {
+                console.log(`/fpls/http results`, pld.data.length);
+                res.contentType("text/plain");
+                res.send(composeArray(pld.data));
+            }).catch(e => console.log(e));
+        });
+    }
+
     dia("http");
     dia("https");
     dia("socks5")
 
     spys("http");
     spys("socks5");
-/*
 
+    pld("http");
+    pld("https");
+    pld("socks4");
+    pld("socks5");
+
+    hide("http");
+    hide("https");
+    hide("socks4");
+    hide("socks5");
+
+    fpls()
+    /*
     cz("http");
     cz("https");
     cz("socks4");
     cz("socks5");
-*/
-
+    */
 
     let port = process.env["PORT"] || 7769;
     app.listen(port, () => console.log(`http://localhost:${port}/`));
