@@ -11,7 +11,8 @@
     const LAUNCH_OPTS = {
         headless: true,
         args: [
-            `--user-agent=${ua.random()}`
+            `--user-agent=${ua.random()}`,
+            `--no-sandbox`
         ]
     };
 
