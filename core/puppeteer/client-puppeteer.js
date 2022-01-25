@@ -1,39 +1,59 @@
 {
-    //const createBrowserless = require('browserless');
-
-    const puppeteer = require('puppeteer');
-
+    const createBrowserless = require('@browserless/pool');
+    const useProxy = require('puppeteer-page-proxy');
     const ua = new ({UserAgent} = require("user-agents"))();
 
-    function client(url, proxy, cb) {
-        try {
-            (async () => {
-                const opts = {
-                    headless: true,
-                    args: [
-                        `--user-agent=${ua.random()}`,
-                        '--no-sandbox',
-                        '--disable-setuid-sandbox'
-                    ]
+    const POOL_OPTS = {
+        max: 20, // max browsers to keep open
+        timeout: 30000 // max time a browser is considered fresh
+    };
+
+    const LAUNCH_OPTS = {
+        headless: true,
+        args: [
+            `--user-agent=${ua.random()}`
+        ]
+    };
+
+    const browserlessPool = createBrowserless(POOL_OPTS, LAUNCH_OPTS);
+
+    function client(url, opts, cb) {
+        (async () => {
+            const browserless = await browserlessPool.createContext();
+
+            try {
+                const page = await browserless.page();
+                if (opts && opts.proxy) {
+                    useProxy(page, opts.proxy);
+                }
+
+                const closeout = function () {
+                    (async () => {
+                        await page.close();
+                        await browserless.destroyContext();
+                    })();
                 };
 
-                if (proxy) opts.args.push(`--proxy-server"=${proxy}`);
+                if (opts && opts.cookies) {
+                    const _cookies = [];
+                    for (let key in opts.cookies) {
+                        _cookies.push({
+                            'name': key,
+                            'value': opts.cookies[key]
+                        })
+                    }
 
-               // const browserlessFactory = createBrowserless({ launchOpts: opts });
-               // const browserless = await browserlessFactory.createContext();
-               // const browser = await browserless.browser();
-               // const page = await browserless.page();
+                    await page.setCookie(..._cookies);
+                }
 
-                const browser = await puppeteer.launch(opts);
-
-                const page = await browser.newPage();
                 await page.goto(url);
+                cb(null, {page, closeout});
 
-                cb(null, {page, browser});
-            })();
-        } catch (exx) {
-            cb(exx)
-        }
+            } catch (exx) {
+                await browserless.destroyContext();
+                cb(exx)
+            }
+        })();
     }
 
     module.exports = client

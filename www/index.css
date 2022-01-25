@@ -1,10 +1,30 @@
-iframe {
-    margin: 5% 0 0 5%;
-    width: 40%;
-    height: 10rem;
+div.die_frame {
+    background-color: #404040;
+    margin: 2% 0 0 2%;
     display: inline-block;
+    color: hotpink;
+    width: 47%;
+    padding: 0
+}
+
+div.die_frame header {
+    font-weight: 700;
+    color: hotpink;
+    background-color: #202020;
+    padding: .5rem;
+    font-family: 'Sedgwick Ave', cursive;
+    font-size: 1.2rem;
+}
+
+iframe {
+    height: 15rem;
+    width: 98%;
+    background-color: aliceblue;
+    margin: .5rem;
 }
 
 body {
     margin: 0 0;
+    background-color: hotpink;
+    color: aliceblue !important;
 }

@@ -1,4 +1,6 @@
 {
+    const DEBUG = false;
+
     const rowparser = require("../core/puppeteer/rowparser")
     const client = require('../core/puppeteer/client-puppeteer');
     const loader = require('../core/cached-scraper');
@@ -10,7 +12,7 @@
             client(path, null, (e, d) => {
                 if (!e) {
 
-                    const {page, browser} = d;
+                    const {page, closeout} = d;
 
                     function evalFilter(submit) {
                         (async () => {
@@ -20,7 +22,7 @@
                                 return trz ? trz.length : 0;
                             });
 
-                            console.log("spys.one", proto, rows);
+                            if (DEBUG) console.log("spys.one", proto, rows);
 
                             if (rows < 100) {
                                 if (!submit) {
@@ -31,20 +33,20 @@
                                         selbox.form.submit()
                                     });
                                     await page.waitForNavigation({waitUntil: "domcontentloaded"});
-                                    console.log("filter changed");
+                                    if (DEBUG) console.log("filter changed");
                                     evalFilter(true);
 
                                 } else {
                                     await page.reload({waitUntil: "domcontentloaded"});
                                     setTimeout(function () {
-                                        console.log("filter error trying refresh");
+                                        if (DEBUG) console.log("filter error trying refresh");
                                         evalFilter(false)
                                     }, 500);
                                 }
 
                             } else {
                                 const text = await page.evaluate(rowparser, {selector: "tr.spy1x,tr.spy1xx"});
-                                await browser.close();
+                                closeout();
                                 cb(null, text);
                             }
                         })();

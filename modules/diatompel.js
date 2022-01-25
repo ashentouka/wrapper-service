@@ -10,7 +10,7 @@
             client(path, null, (e, d) => {
                 if (!e) {
                     (async () => {
-                        const {page, browser} = d;
+                        const {page, closeout} = d;
 
                         await page.waitForSelector("select[name='proxyList_length']");
                         await page.evaluate(function () {
@@ -26,7 +26,7 @@
                                 });
                                 if (count > 100) {
                                     const text = await page.evaluate(rowparser,{selector:"#proxyList tr"});
-                                    await browser.close();
+                                    closeout();
                                     cb(null, text);
                                 } else {
                                     testo();

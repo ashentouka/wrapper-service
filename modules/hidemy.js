@@ -12,7 +12,7 @@
             client(urlbase + hash, {}, (e, d) => {
                 if (e) cb(e);
                 else {
-                    const {page, browser} = d;
+                    const { page, closeout } = d;
                     (async () => {
                         async function paged() {
                            // console.log (await page.evaluate(function (){ return document.body.innerText }));
@@ -22,21 +22,21 @@
                                 data = data.concat(proxy);
 
                                 let clicker = await page.evaluate(function (pager){
-                                    let link = document.querySelectorAll(pager > 1 ? ".pagination li.active" : ".pagination li.is-active + li");
+                                    let link = document.querySelectorAll(pager > 1 ? ".pagination li.active + li" : ".pagination li.is-active + li");
                                     if (link.length > 0 && link[0].className === "next_array") link = [];
                                     return link.length;
                                 },pager);
-console.log(clicker);
+
                                 console.log(`page ${pager}: ${proxy.length}`);
 
-                                if (clicker > 0 && pager < 24) {
+                                if (clicker > 0 && pager < 50) {
                                     await page.goto(urlbase + "&start=" + (64*pager) + hash);
                                     pager++;
                                     //await page.waitForNavigation({waitUntil: "domcontentloaded"});
                                     await paged();
                                 } else {
-                                    browser.close();
                                     cb(null,data);
+                                    closeout();
                                 }
                         }
 

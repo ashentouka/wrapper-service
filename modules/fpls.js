@@ -11,20 +11,22 @@
             client("https://www.google.com/search?q=freeproxylists.net", {}, (e, d) => {
                 if (e) cb(e);
                 else {
-                    const {page, browser} = d;
                     (async () => {
+                        const {page, closeout} = d;
                         await page.evaluate(function () {
                             document.querySelector("#search a").click();
                         })
 
                         async function paged() {
-                            await page.waitForNavigation({ waitUntil: "domcontentloaded" });
-                            await page.waitForSelector("table.DataGrid");
-                            if (paged === 1) await page.waitForTimeout(3000);
+
+                            try {
+                                await page.waitForNavigation({waitUntil: "domcontentloaded"});
+                                await page.waitForSelector("table.DataGrid");
+                                if (paged === 1) await page.waitForTimeout(3000);
                                 const proxy = await page.evaluate(rowparser, {selector: "tr.Even,tr.Odd"});
                                 data = data.concat(proxy);
 
-                                let clicker = await page.evaluate(function (){
+                                let clicker = await page.evaluate(function () {
                                     let link = document.querySelectorAll("span.current + a");
                                     if (link.length > 0) {
                                         link[0].click();
@@ -38,9 +40,13 @@
                                     pager++;
                                     await paged();
                                 } else {
-                                    browser.close();
-                                    cb(null,data);
+                                    closeout();
+                                    cb(null, data);
                                 }
+                            } catch (exx) {
+                                closeout()
+                                cb(exx);
+                            }
                         }
 
                         await paged();

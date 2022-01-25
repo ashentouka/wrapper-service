@@ -11,7 +11,7 @@
 
             client(path, null, (e, d) => {
                 if (!e) {
-                    const {page, browser} = d;
+                    const {page, closeout} = d;
 
                     function next() {
                         (async () => {
@@ -26,7 +26,7 @@
                                 return {num: parseInt(pdata[1]), of: parseInt(pdata[2])}
                             });
 
-                            console.log(`Page ${pageinfo.num} of ${pageinfo.of}: ${proxy.length} ${proto} proxy`)
+                           // console.log(`Page ${pageinfo.num} of ${pageinfo.of}: ${proxy.length} ${proto} proxy`)
                             if (pageinfo.num < pageinfo.of) {
                                 await page.evaluate(function () {
                                     document.querySelector("#example1_next button").click();
@@ -34,7 +34,7 @@
                                 await page.waitForSelector("#tpagess");
                                 next();
                             } else {
-                                browser.close();
+                               closeout();
                                 cb(null, data);
                             }
 
