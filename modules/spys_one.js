@@ -5,8 +5,9 @@
     const client = require('../core/puppeteer/client-puppeteer');
     const loader = require('../core/cached-scraper');
 
-    function runner(proto) {
-        let path = `https://spys.one/en/${proto}-proxy-list`;
+    function runner(proto,pathVar) {
+        let path = `https://spys.one/en/${pathVar}-proxy-list`;
+
 
         function parser(cb) {
             client(path, null, (e, d) => {
@@ -60,12 +61,12 @@
         }
 
         return function () {
-            return loader(path, parser);
+            return loader(path, proto,{ ttl: { refresh: 15 * 60 * 1000 }, auto: 30 * 60 * 1000 }, parser);
         }
     }
 
     module.exports = {
-        http: runner("http"),
-        socks5: runner("socks")
+        http: runner("http","http"),
+        socks5: runner("socks5","socks")
     }
 }

@@ -49,7 +49,7 @@
         }
 
         return function () {
-            return loader(path, parser);
+            return loader(path, proto,{ ttl: { refresh: 15 * 60 * 1000 }, auto: 20 * 60 * 1000 }, parser);
         }
     }
 

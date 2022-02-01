@@ -3,8 +3,8 @@
     const client = require('../core/puppeteer/client-puppeteer');
     const loader = require('../core/cached-scraper');
 
-    function runner(proto) {
-        let urlbase = `https://hidemy.name/en/proxy-list/?type=${proto}`;
+    function runner(proto, pathVar) {
+        let urlbase = `https://hidemy.name/en/proxy-list/?type=${pathVar}`;
         let hash = "#list";
         function parser(cb) {
             let data = []
@@ -47,14 +47,14 @@
         }
 
         return function () {
-            return loader(urlbase, parser);
+            return loader(urlbase, proto, {ttl: { refresh: 20 * 60 * 1000 }, auto: 30 * 60 * 1000}, parser);
         }
     }
 
     module.exports = {
-        "socks4": runner("4"),
-        "socks5": runner("5"),
-        "http": runner("h"),
-        "https": runner("s"),
+        "socks4": runner("socks4","4"),
+        "socks5": runner("socks5","5"),
+        "http": runner("http","h"),
+        "https": runner("https","s"),
     };
 }

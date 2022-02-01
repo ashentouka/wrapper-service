@@ -56,7 +56,7 @@
         }
 
         return function () {
-            return loader(`https://freeproxylists.net`, parser);
+            return loader(`https://freeproxylists.net`, proto, parser);
         }
     }
 

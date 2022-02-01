@@ -4,7 +4,7 @@
     const loader = require('../core/cached-scraper');
 
     function runner(proto) {
-        let path = `https://www.ditatompel.com/proxy/type/${proto}`;
+        let path = `https://ditatompel.com/proxy/type/${proto}`;
 
         function parser(cb) {
             client(path, null, (e, d) => {
@@ -44,7 +44,7 @@
         }
 
         return function () {
-            return loader(path, parser);
+            return loader(path, proto, { auto: 2 * 60 * 1000, ttl: { refresh: 1 * 60 * 1000 }}, parser);
         }
     }
 

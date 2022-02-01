@@ -4,7 +4,7 @@
     const loader = require('../core/cached-scraper');
 
     function runner() {
-        let path = `https://www.iplocation.net/proxy-list`;
+        let path = `https://iplocation.net/proxy-list`;
 
         function parser(cb) {
             let data = [];
@@ -34,7 +34,7 @@
         }
 
         return function () {
-            return loader(path, parser);
+            return loader(path, "http",{ ttl: { refresh: 30 * 60 * 1000 }, auto: 30 * 60 * 1000 }, parser);
         }
 
     }

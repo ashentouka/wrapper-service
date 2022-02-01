@@ -1,16 +1,18 @@
 #!/usr/bin/node
 {
-
     const express = require('express'),
         path = require("path"),
         async = require("async"),
+        urls = require("whatwg-url");
 
         m_spys = require("./modules/spys_one"),
-        m_fpls = require("./modules/fpls"),
         m_pld = require("./modules/proxy-list-dl"),
         m_dia = require("./modules/diatompel"),
         m_hide = require("./modules/hidemy"),
         m_iploc = require("./modules/iploc"),
+
+        // TODO: Script is broken, likely stuck on a captcha
+        //  m_fpls = require("./modules/fpls"),
 
         loader = require("./core/cached-scraper");
     app = express();
@@ -25,91 +27,79 @@
         return text;
     }
 
+    let endpoints = {
+        uris: [],
+        finished: false
+    }
+
+    app.get("/endpoints.loaded", (req, res) => {
+        res.contentType("application/json");
+        res.send(JSON.stringify(endpoints));
+    });
+
     let queue = async.queue((task, callback) => {
-        console.log(`Preload Queue: ${task.resturi}`);
-        task.load().then(function (output){
-            app.get(task.resturi, (req, res) => {
+        task().then(function (output){
+            let resturi = `/${output.protocol}/${urls.basicURLParse(output.url).host}`
+            console.log(`Preload Complete: ${resturi} [${output.data.length} proxies]`);
+            app.get(resturi, (req, res) => {
                 (async()=>{
                     let puts = await output.loader();
                     res.contentType("text/plain");
                     res.send(composeArray(puts.data));
                 })()
             });
-            console.log(`Preload Complete: ${task.resturi} [${output.data.length} proxies]`);
             callback();
         })
     }, 1);
 
-    queue.push({
-        resturi: `/proxies/iploc/http`,
-        load: m_iploc
-    })
+    queue.push(m_iploc);
 
 /*  TODO Disabled until script is fixed... captcha?
-    queue.push({
-        resturi: `/proxies/fpls/http`,
-        load: m_fpls
-    })*/
+    queue.push(m_fpls)*/
 
-    queue.push({
-        resturi: "/proxies/nova/http",
-        load: function (){
-            const parser = require("./core/puppeteer/parser-puppeteer");
-            const url = "https://www.proxynova.com/proxy-server-list";
-            return loader(url, function (cb){
-                parser.paged(url, {selector: "#tbl_proxy_list tbody tr", namedpages: [ "/anonymous-proxies/", "/elite-proxies/" ]}, cb);
-            })
-        }
+    /*
+    queue.push(function (){
+        const parser = require("./core/puppeteer/parser-puppeteer");
+        const url = "https://www.proxynova.com/proxy-server-list";
+        return loader(url, "http", {ttl: { refresh: 60 * 1000 }, auto: 10 * 60 * 1000 },function (cb) {
+            parser.paged(url, {selector: "#tbl_proxy_list tbody tr", namedpages: [ "/anonymous-proxies/", "/elite-proxies/" ]}, cb);
+        })
     })
-
-    queue.push({
-        resturi: "/proxies/f-p-l/http",
-        load:   function () {
-            const parser = require("./core/simple/parser-simple");
-            const url = "https://free-proxy-list.net";
-            return loader(url, function (cb) {
-                parser.table(url, {selector: "div.fpl-list table tbody tr"}, cb);
-            })
-        }
+*/
+    queue.push(function () {
+        const parser = require("./core/simple/parser-simple");
+        const url = "https://free-proxy-list.net";
+        return loader(url, "http",{ttl: { refresh: 60 * 1000 }, auto: 10 * 60 * 1000 },function (cb) {
+            parser.table(url, {selector: "div.fpl-list table tbody tr"}, cb);
+        })
     })
 
     let all_protocols = ['http', 'https', 'socks4', 'socks5'];
     for (let proto_idx in all_protocols) {
         let proto = all_protocols[proto_idx];
-        queue.push({
-            resturi: `/proxies/p-l-d/${proto}`,
-            load: m_pld[proto]
-        })
+        queue.push(m_pld[proto])
     }
 
     for (let proto_idx in all_protocols) {
         let proto = all_protocols[proto_idx];
-        queue.push({
-            resturi: `/proxies/hidemy/${proto}`,
-            load: m_hide[proto]
-        })
+        queue.push(m_hide[proto])
     }
 
     let spys_protocols = ['http', 'socks5'];
     for (let proto_idx in spys_protocols) {
         let proto = spys_protocols[proto_idx];
-        queue.push({
-            resturi: `/proxies/spys_one/${proto}`,
-            load: m_spys[proto]
-        })
+        queue.push(m_spys[proto])
     }
 
     let dia_protocols = ['http', 'https', 'socks5'];
     for (let proto_idx in dia_protocols) {
         let proto = dia_protocols[proto_idx];
-        queue.push({
-            resturi: `/proxies/diatompel/${proto}`,
-            load: m_dia[proto]
-        })
+        queue.push(m_dia[proto])
     }
 
     queue.drain(function (){
         console.log("Preload Conplete.");
+        endpoints.finished = true;
     })
 
     let port = process.env["PORT"] || 7769;

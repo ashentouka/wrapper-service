@@ -17,9 +17,10 @@
     "express": "^4.17.1",
     "express-static": "^1.2.6",
     "lodash": "^4.17.21",
-    "lowdb": "^3.0.0",
+    "mongodb": "^4.3.1",
     "puppeteer": "^9.1.1",
     "puppeteer-page-proxy": "^1.2.8",
-    "user-agents": "^1.0.857"
+    "user-agents": "^1.0.857",
+    "whatwg-url": "^11.0.0"
   }
 }

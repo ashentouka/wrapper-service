@@ -5,40 +5,35 @@
     <title>Services</title>
     <link rel="stylesheet" type="text/css" href="index.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script>
-        const urls = [
-            "/hidemy/socks4",
-            "/hidemy/socks5",
-            "/hidemy/http",
-            "/hidemy/https",
-            "/p-l-d/http",
-            "/p-l-d/https",
-            "/p-l-d/socks4",
-            "/p-l-d/socks5",
-            "/spys_one/http",
-            "/spys_one/socks5",
-            "/diatompel/http",
-            "/diatompel/https",
-            "/diatompel/socks5",
-          //  "/fpls/http",
-            "/f-p-l/http",
-            "/nova/http",
-            "/iploc/http"
-        ]
-        function load_one(){
-            let list = urls.pop();
-            let die = document.createElement("div");
-            die.className = "die_frame";
-            let dih = document.createElement("header");
-            dih.innerText = "/proxies" + list;
-            let ifr = document.createElement("iframe");
-            ifr.src = "/proxies" + list;
-            die.appendChild(dih);
-            die.appendChild(ifr);
-            document.body.appendChild(die);
-            if (urls.length > 0) setTimeout(load_one, 0);
-        }
-        setTimeout(load_one,0);
+        $(function () {
+            let added = [];
+
+            function scan_ends() {
+                $.get("/endpoints.loaded").then(endpoints => {
+                    for (let idx in endpoints.loaded) {
+                        let list = endpoints.loaded[idx];
+                        if (!added.includes(list)) {
+                            let die = document.createElement("div");
+                            die.className = "die_frame";
+                            let dih = document.createElement("header");
+                            dih.innerText = "/proxies" + list;
+                            let ifr = document.createElement("iframe");
+                            ifr.src = "/proxies" + list;
+                            die.appendChild(dih);
+                            die.appendChild(ifr);
+                            document.body.appendChild(die);
+                            added.push(list);
+                        }
+                    }
+                    if (!endpoints.finished) {
+                        setTimeout(scan_ends, 2000);
+                    }
+                });
+            }
+        });
     </script>
 </head>
 <body>
