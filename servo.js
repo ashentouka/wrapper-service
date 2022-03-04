@@ -57,7 +57,6 @@
 /*  TODO Disabled until script is fixed... captcha?
     queue.push(m_fpls)*/
 
-    /*
     queue.push(function (){
         const parser = require("./core/puppeteer/parser-puppeteer");
         const url = "https://www.proxynova.com/proxy-server-list";
@@ -65,7 +64,7 @@
             parser.paged(url, {selector: "#tbl_proxy_list tbody tr", namedpages: [ "/anonymous-proxies/", "/elite-proxies/" ]}, cb);
         })
     })
-*/
+
     queue.push(function () {
         const parser = require("./core/simple/parser-simple");
         const url = "https://free-proxy-list.net";

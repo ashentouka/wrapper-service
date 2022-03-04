@@ -29,7 +29,7 @@
 
                                 console.log(`page ${pager}: ${proxy.length}`);
 
-                                if (clicker > 0 && pager < 50) {
+                                if (clicker > 0) { // && pager < 50) {
                                     await page.goto(urlbase + "&start=" + (64*pager) + hash);
                                     pager++;
                                     //await page.waitForNavigation({waitUntil: "domcontentloaded"});
